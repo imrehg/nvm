@@ -141,6 +141,13 @@ nvm()
         curl -C - --progress-bar $tarball -o "node-$VERSION.tar.gz" && \
         tar -xzf "node-$VERSION.tar.gz" && \
         cd "node-$VERSION" && \
+
+        # Arch Linux modifications for Python2
+        find -type f -exec sed -e 's_^#!/usr/bin/env python$_&2_' -e 's_^\(#!/usr/bin/python2\).[45]$_\1_' -e 's_^#!/usr/bin/python$_&2_' -e "s_'python'_'python2'_" -i {} \;
+        find test -type f -exec sed -e "s|python |python2 |" -i {} \;
+        sed -i "s|python |python2 |" Makefile
+        export PYTHON=python2
+
         ./configure --prefix="$NVM_DIR/$VERSION" $ADDITIONAL_PARAMETERS && \
         make && \
         rm -f "$NVM_DIR/$VERSION" 2>/dev/null && \
